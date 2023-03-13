@@ -14,12 +14,11 @@ const ExploreScreen = () => {
     pagination: { current },
     filter,
   } = useAppSelector((state) => state.ui);
+  const games = useAppSelector((state) => state.games.games);
 
   useEffect(() => {
     getAllGames(current, filter);
   }, [getAllGames, current, filter]);
-
-  const games = useAppSelector((state) => state.games.games);
 
   return (
     <SafeAreaView>

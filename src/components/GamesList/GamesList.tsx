@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, View } from "react-native";
+import { Animated, FlatList, View } from "react-native";
 import { type Games } from "../../redux/features/games/types";
 import { useAppSelector } from "../../redux/hooks";
 import GameCard from "../GameCard/GameCard";
@@ -13,6 +13,7 @@ interface GamesListProps {
 const GamesList = ({ games }: GamesListProps): JSX.Element => {
   const { current, total } = useAppSelector((state) => state.ui.pagination);
 
+  const gapItem = (): JSX.Element => <View style={gamesListStyles.gap} />;
   const renderLoadMore = () =>
     current + 1 === total ? (
       <View style={{ marginBottom: 24 }} />
@@ -20,19 +21,28 @@ const GamesList = ({ games }: GamesListProps): JSX.Element => {
       <LoadMore />
     );
 
-  const gapItem = (): JSX.Element => <View style={gamesListStyles.gap} />;
+  const translateY = new Animated.Value(100);
+
+  const animation = () => {
+    Animated.timing(translateY, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <View>
+    <Animated.View style={{ transform: [{ translateY }] }}>
       <FlatList
         data={games}
         renderItem={({ item }) => <GameCard game={item} />}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
+        onLayout={animation}
         ItemSeparatorComponent={gapItem}
         ListFooterComponent={renderLoadMore}
       />
-    </View>
+    </Animated.View>
   );
 };
 
